@@ -18,7 +18,7 @@
 
 ## 使用
 
-![image-20220711114540147](img\image-20220711114540147.png)
+![image-20220711114540147](https://github.com/piiperxyz/AniYa/blob/main/img/image-20220711114540147.png)
 
 1. 后缀支持bin/exe/dll，可输入绝对路径或相对路径或点击按钮选择。默认beacon.bin。（必选）
 2. 生成木马的名称。默认result.exe。（必选）

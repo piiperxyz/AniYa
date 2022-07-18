@@ -31,7 +31,6 @@ type Gopt struct {
 	Shellcodelocation string
 	Antisandboxopt    Antisandboxopt
 	Buildopt          Buildopt
-	Advancedopt       Advancedopt
 }
 
 type Antisandboxopt struct {
@@ -201,7 +200,7 @@ func finalbuild(buildopt2 Buildopt, dstfile string) {
 			"-s -w",
 		}
 		if buildopt2.Hide {
-			command = append(command, "-H winodwsgui")
+			command[len(command)-1] = command[len(command)-1] + " -H windowsgui"
 		}
 		if buildopt2.Race {
 			command = append(command, "-race")

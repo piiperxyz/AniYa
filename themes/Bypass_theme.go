@@ -16,11 +16,6 @@ import (
 var (
 	infProgress *widget.ProgressBarInfinite
 
-	advancedopt = core.Advancedopt{
-		Addextradata: true,
-		Unhook:       true,
-		Gate:         true,
-	}
 	antisandboxopt = core.Antisandboxopt{
 		Timestart:      false,
 		Ramcheck:       false,
@@ -47,7 +42,6 @@ var (
 		Shellcodelocation: "",
 		Antisandboxopt:    antisandboxopt,
 		Buildopt:          buildopt,
-		Advancedopt:       advancedopt,
 	}
 )
 

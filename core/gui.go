@@ -52,11 +52,6 @@ type Buildopt struct {
 	Hide       bool `隐藏黑框,会减少免杀效果`
 }
 
-type Advancedopt struct {
-	Addextradata bool `收集本地信息加密后追加至loader末尾`
-	Unhook       bool `unhook`
-	Gate         bool `gate`
-}
 
 //必须在该文件下放置module文件夹
 //go:embed "module"

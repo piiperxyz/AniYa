@@ -18,14 +18,14 @@ func FileExists(path string) bool {
 	return true
 }
 
-func FileCopy(srcpath string, dstpath string) bool {
-	srcFile, err := os.Open(srcpath)
+func FileCopy(srcPath string, dstPath string) bool {
+	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		fmt.Println(err)
 		return false
 	}
 	buf := make([]byte, 1024)
-	dstFile, err2 := os.Create(dstpath)
+	dstFile, err2 := os.Create(dstPath)
 	if err2 != nil {
 		fmt.Println(err)
 		return false
@@ -48,11 +48,11 @@ func FileCopy(srcpath string, dstpath string) bool {
 	return true
 }
 
-func RemoveSpecialCharactar(filedata string) string {
-	filedata = strings.Replace(filedata, "\\x", "", -1)
-	filedata = strings.Replace(filedata, "\"", "", -1)
-	filedata = strings.Replace(filedata, " ", "", -1)
-	filedata = strings.Replace(filedata, "\r\n", "", -1)
-	filedata = strings.Replace(filedata, ";", "", -1)
-	return filedata
+func RemoveSpecialCharacter(fileData string) string {
+	fileData = strings.Replace(fileData, "\\x", "", -1)
+	fileData = strings.Replace(fileData, "\"", "", -1)
+	fileData = strings.Replace(fileData, " ", "", -1)
+	fileData = strings.Replace(fileData, "\r\n", "", -1)
+	fileData = strings.Replace(fileData, ";", "", -1)
+	return fileData
 }

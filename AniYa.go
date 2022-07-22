@@ -45,7 +45,7 @@ func init() {
 func main() {
 	defer os.Unsetenv("FYNE_FONT")
 	//退出时
-	defer os.RemoveAll(core.TEMP_DIR)
+	defer os.RemoveAll(core.TempDir)
 	a := app.NewWithID("io.fyne.demo")
 	a.SetIcon(themes.Resource2Png)
 	//a.SetIcon(theme.FyneLogo())
@@ -58,7 +58,6 @@ func main() {
 		w.Show()
 	})
 	version := fyne.NewMenuItem("VERSION", func() {
-		//versionwindow := a.NewWindow("Version:" + Version)
 		v1 := dialog.NewInformation("Version", Version, w)
 		v1.Show()
 	})

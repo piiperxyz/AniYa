@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	fyne.io/fyne/v2 v2.2.2
+	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 	github.com/Binject/debug v0.0.0-20210312092933-6277045c2fdf
 	github.com/Binject/go-donut v0.0.0-20210701074227-67a31e2d883e
 	github.com/EgeBalci/sgn v0.0.0-20211030105722-e3b0703a68cc

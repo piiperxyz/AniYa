@@ -134,7 +134,8 @@ func addSeparate(location string, url string) {
 }
 
 func addHideWindows() {
-	hideCode := []string{`win.ShowWindow(win.GetConsoleWindow(), win.SW_HIDE)`, `"github.com/lxn/win"
+	hideCode := []string{`win.ShowWindow(win.GetConsoleWindow(), win.SW_HIDE)`, `
+	"github.com/lxn/win"
 	//__IMPORT__`}
 	addCode(hideCode, "hide")
 }

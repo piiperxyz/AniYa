@@ -13,21 +13,21 @@
 1. 使用[fyne](https://github.com/fyne-io/fyne)的GUI界面，不算难看，简单易懂，还有个炫酷的进度条！wakuwaku(*^▽^*)
 2. 可自定义多种反沙箱，其中检查微信的适合钓鱼
 3. 可自定义多种编译选项，支持garble编译环境
-4. 分离免杀
+4. 分离免杀(本地/HTTP)
 5. 支持打包PE文件（如`mimikatz`）
 
 ## 使用
 
-![image-20220711114540147](https://github.com/piiperxyz/AniYa/blob/main/img/image-20220711114540147.png)
+![image-20220711114540147](https://github.com/piiperxyz/AniYa/blob/main/img/Snipaste_2022-07-22_18-00-40.jpg)
 
 1. 后缀支持bin/exe/dll，可输入绝对路径或相对路径或点击按钮选择。默认beacon.bin。（必选）
 2. 生成木马的名称。默认result.exe。（必选）
-3. 分离免杀，可输入绝对路径或相对路径，但生成的文件是固定在当前目录生成，木马会去读取目标路径下的分离shellcode
-4. sgn混淆shellcode，默认5-10次。因为该功能所以必需配备keystone.dll，不放心可自行替换。
-5. 选择shellcode加密算法（必选）
-6. 选择loader（必选）
-7. 反沙箱
-8. 编译选项
+3. 本地分离免杀，可输入绝对路径或相对路径，但生成的文件（默认code.txt）是固定在当前目录生成，木马会去读取目标路径下的分离shellcode
+4. 远程分离免杀，木马去请求网络地址下载shellcode，加密的shellcode为当前目录的code.txt
+6. 选择shellcode加密算法（必选）
+7. 选择loader（必选）
+8. 反沙箱
+9. 编译选项
 
 | 反沙箱参数     | 说明                                                         |
 | -------------- | ------------------------------------------------------------ |
@@ -54,12 +54,12 @@ loader的说明搬一下[4ra1n](https://github.com/4ra1n)的介绍。
 | RtlCreateUserThread      | 利用Windows RtlCreateUserThread函数（注入explorer.exe）  |
 | UuidFromString           | 利用Windows UuidFromStringA函数                          |
 
-编译参数说明，不包含`ldflag -s -w` ，默认自带
+编译参数说明，不包含`ldflag -s -w`及`-trimpath` ，默认自带
 
 |                             参数                             |                           参数说明                           |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                             race                             |       使用竞态检测器-race进行编译（可能提高免杀效果）        |
-|                             Hide                             |      隐藏窗口ldflags -H windowsgui（可能降低免杀效果）       |
+|                             Hide                             | ~~隐藏窗口ldflags -H windowsgui（可能降低免杀效果）~~<br>更换为调用https://github.com/lxn/win,免杀效果增强，但有一闪而过的黑框 |
 |        [garble](https://github.com/burrowers/garble)         | 使用编译混淆器garble来编译，需事先安装好，编译速度会慢一些（推荐） |
 | [literalobf](https://github.com/burrowers/garble#literal-obfuscation) |        garble特有的参数，混淆所有字符串等（建议勾选）        |
 | [randomseed](https://github.com/burrowers/garble#determinism-and-seeds) | garble特有的参数，使编译变的更随机，更加难以逆向（建议勾选） |
@@ -70,14 +70,15 @@ loader的说明搬一下[4ra1n](https://github.com/4ra1n)的介绍。
 
 #### 从源码编译
 
-构建源代码的需要依赖项是[keystone 引擎](https://github.com/keystone-engine/keystone)，请按照[这些](https://github.com/keystone-engine/keystone/blob/master/docs/COMPILE.md)说明安装库。然后按照以下步骤进行编译
+~~构建源代码的需要依赖项是[keystone 引擎](https://github.com/keystone-engine/keystone)，请按照[这些](https://github.com/keystone-engine/keystone/blob/master/docs/COMPILE.md)说明安装库。然后按照以下步骤进行编译~~
 
+因确定sgn被拉黑，取消相关功能，现在直接编译很方便
 ```
 直接go build
 或者安装fyne之后使用fyne的打包工具来打包fyne package -icon favicon.ico
 ```
 
-keystone安装比较麻烦，可以自行将sgn的相关功能注释掉，人工对shelllcode进行sgn混淆。
+~~keystone安装比较麻烦，可以自行将sgn的相关功能注释掉，人工对shelllcode进行sgn混淆。~~
 
 ## 环境准备
 
@@ -104,15 +105,31 @@ sgn加密疑似已被提取特征，被WD和360拉黑了。
 
 自测下来开启一些选项还是能免360和WD，希望各位大佬测试的时候关闭360和WD的自动上传样本功能，测试环境测，不要直接拖到VT上，火绒断网测就OK。
 
-
-
 ## 参考
+
+欢迎各位大佬提PR!
 
 感谢[不羡](https://github.com/V1rtu0l)师傅提供的GUI建议及反沙箱模块
 
 - https://github.com/safe6Sec/GolangBypassAV
 - https://github.com/Ne0nd0g/go-shellcode
 - https://github.com/afwu/GoBypass\(4ra1n大佬的好像删了)
+
+## 更新
+
+- 1.1.0
+
+更新HTTP分离免杀、变更窗口隐藏功能实现方式。
+
+优化UI，现loader会根据打包EXE还是shellcode进行变更。
+
+修复BUG。
+
+感谢[夜中空想](https://github.com/imkitsch)提供的HTTP分离免杀和隐藏窗口功能
+
+- 1.0.1
+
+修复HIDE参数的bug
 
 ## TODO
 

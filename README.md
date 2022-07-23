@@ -59,7 +59,7 @@ loader的说明搬一下[4ra1n](https://github.com/4ra1n)的介绍。
 |                             参数                             |                           参数说明                           |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                             race                             |       使用竞态检测器-race进行编译（可能提高免杀效果）        |
-|                             Hide                             | ~~隐藏窗口ldflags -H windowsgui（可能降低免杀效果）~~<br>更换为调用https://github.com/lxn/win,免杀效果增强，但有一闪而过的黑框 |
+|                             Hide                             | ~~隐藏窗口ldflags -H windowsgui（可能降低免杀效果）~~<br>更换为调用`https://github.com/lxn/win`,免杀效果增强，但有一闪而过的黑框 |
 |        [garble](https://github.com/burrowers/garble)         | 使用编译混淆器garble来编译，需事先安装好，编译速度会慢一些（推荐） |
 | [literalobf](https://github.com/burrowers/garble#literal-obfuscation) |        garble特有的参数，混淆所有字符串等（建议勾选）        |
 | [randomseed](https://github.com/burrowers/garble#determinism-and-seeds) | garble特有的参数，使编译变的更随机，更加难以逆向（建议勾选） |

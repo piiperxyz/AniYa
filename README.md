@@ -16,6 +16,12 @@
 4. 分离免杀(本地/HTTP)
 5. 支持打包PE文件（如`mimikatz`）
 
+## F&Q:
+
+勾选garble编译时闪退：想勾选[garble](https://github.com/burrowers/garble)编译的需提前安装好garble，怕被说留后门啥的所以我这边不提供这种第三方的工具。安装命令很简单`go install mvdan.cc/garble@latest`，不放心的可以去点进garble的github自己安装！
+
+32位/64位问题：该框架生成的木马是go编译的，所以arch也是go的编译环境决定的，默认安装的会根据自身系统的arch来，命令行输入`go env | findstr GOARCH`可以查看。32位的免杀效果实在太拉，个人实战中遇到非要32位的系统也不多，所以之前没有提，实在需要32位的输入`set GOARCH=386`可以生成32位的木马。64位：`set GOARCH=amd64`
+
 ## 使用
 
 ![image-20220711114540147](https://github.com/piiperxyz/AniYa/blob/main/img/Snipaste_2022-07-22_18-00-40.jpg)

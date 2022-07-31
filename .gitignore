@@ -20,3 +20,4 @@
 .xml
 
 *.zip
+core/sigthief.go

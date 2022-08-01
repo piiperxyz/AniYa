@@ -15,6 +15,8 @@
 3. 可自定义多种编译选项，支持garble编译环境
 4. 分离免杀(本地/HTTP)
 5. 支持打包PE文件（如`mimikatz`）
+6. 支持窃取数字签名
+7. 伪造微软其他软件添加`icon`和`versioninfo`
 
 ## F&Q:
 
@@ -24,14 +26,15 @@
 
 ## 使用
 
-![image-20220711114540147](https://github.com/piiperxyz/AniYa/blob/main/img/Snipaste_2022-07-22_18-00-40.jpg)
+![image-20220711114540147](https://github.com/piiperxyz/AniYa/blob/main/img/Snipaste_2022-08-01_16-48-30.jpg)
 
 1. 后缀支持bin/exe/dll，可输入绝对路径或相对路径或点击按钮选择。默认beacon.bin。（必选）
 2. 生成木马的名称。默认result.exe。（必选）
-3. 本地分离免杀，可输入绝对路径或相对路径，但生成的文件（默认code.txt）是固定在当前目录生成，木马会去读取目标路径下的分离shellcode
-4. 远程分离免杀，木马去请求网络地址下载shellcode，加密的shellcode为当前目录的code.txt
-6. 选择shellcode加密算法（必选）
-7. 选择loader（必选）
+3. 选择shellcode加密算法（必选）
+4. 选择loader（必选）
+5. 本地分离免杀，可输入绝对路径或相对路径，但生成的文件（默认code.txt）是固定在当前目录生成，木马会去读取目标路径下的分离shellcode
+6. 远程分离免杀，木马去请求网络地址下载shellcode，加密的shellcode为当前目录的code.txt
+7. 伪造数字签名，选择一个具有签名的微软文件，如MSbuild.exe等。
 8. 反沙箱
 9. 编译选项
 
@@ -64,7 +67,7 @@ loader的说明搬一下[4ra1n](https://github.com/4ra1n)的介绍。
 
 |                             参数                             |                           参数说明                           |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|                             race                             |       使用竞态检测器-race进行编译（可能提高免杀效果）        |
+|                             Fake                             |       添加图标和manifest等信息，尝试伪装为其他微软程序       |
 |                             Hide                             | ~~隐藏窗口ldflags -H windowsgui（可能降低免杀效果）~~<br>更换为调用`https://github.com/lxn/win`,免杀效果增强，但有一闪而过的黑框 |
 |        [garble](https://github.com/burrowers/garble)         | 使用编译混淆器garble来编译，需事先安装好，编译速度会慢一些（推荐） |
 | [literalobf](https://github.com/burrowers/garble#literal-obfuscation) |        garble特有的参数，混淆所有字符串等（建议勾选）        |
@@ -123,26 +126,52 @@ sgn加密疑似已被提取特征，被WD和360拉黑了。
 
 ## 更新
 
-- 1.1.0
+<details>
+    <summary><font size="5">1.2.0</font></summary>
+<body>
+    <ul>
+        <br>
+    <li>更新签名伪造功能</li>
+        <br>
+<li>更新文件伪装功能，伪装功能只为增强免杀效果，没有做自定义，有这个需求应该自己有单独更改文件相关属性的工具。</li><br>
+<li>修复-race与-trimpath冲突的BUG，删除race参数。</li><br>
+    </ul>
+        </body>
+</details>
 
-更新HTTP分离免杀、变更窗口隐藏功能实现方式。
+<details>
+<summary><font size="5">1.1.0</font></summary>
+  <br>
+<body>
+    <ul>
+    <li>更新HTTP分离免杀、变更窗口隐藏功能实现方式。</li>
+  <br>
+<li>优化UI，现loader会根据打包EXE还是shellcode进行变更。</li>
+  <br>
+<li>修复BUG。</li>
+  <br>
+<li>感谢[夜中空想](https://github.com/imkitsch)提供的HTTP分离免杀和隐藏窗口功能</li>
+  <br>
+</body>
+</details>
 
-优化UI，现loader会根据打包EXE还是shellcode进行变更。
 
-修复BUG。
-
-感谢[夜中空想](https://github.com/imkitsch)提供的HTTP分离免杀和隐藏窗口功能
-
-- 1.0.1
-
-修复HIDE参数的bug
+<details>
+<summary><font size="5">1.0.1</font></summary>
+  <br>
+<body>
+    <ul>
+    <li>修复HIDE参数的bug</li>
+        <br>
+</body>
+</details>
 
 ## TODO
 
-- 签名伪造
+- ~~签名伪造~~
 
-- 自定义icon和versioninfo
-- 文件捆绑功能
+- ~~自定义icon和versioninfo~~
+- ~~文件捆绑功能~~
 
 - ~~更多增强功能，如脱钩技术（halo's gate hell's gate unhook），考虑到免杀实效性，暂不考虑公开~~
 

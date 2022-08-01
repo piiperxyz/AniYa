@@ -3,8 +3,10 @@ package core
 import (
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 func FileExists(path string) bool {
@@ -55,4 +57,12 @@ func RemoveSpecialCharacter(fileData string) string {
 	fileData = strings.Replace(fileData, "\r\n", "", -1)
 	fileData = strings.Replace(fileData, ";", "", -1)
 	return fileData
+}
+
+func GenerateNumer(min, max int) int {
+	rand.Seed(time.Now().UnixNano())
+	num := rand.Intn(max-min) + min
+	n := num
+	return n
+
 }
